@@ -1,0 +1,279 @@
+
+PS C:\Users\ankit> minikube start
+
+PS C:\Users\ankit> kubectl get pods
+
+PS C:\Users\ankit> kubectl get deployment
+
+PS C:\Users\ankit> kubectl get service
+NAME         TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)   AGE
+kubernetes   ClusterIP   10.96.0.1    <none>        443/TCP   26m
+PS C:\Users\ankit> kubectl -h
+
+PS C:\Users\ankit> kubectl create deployment ngnix-server --image=ngnix
+deployment.apps/ngnix-server created
+
+PS C:\Users\ankit> kubectl get deploy
+NAME           READY   UP-TO-DATE   AVAILABLE   AGE
+ngnix-server   0/1     1            0           100s
+
+PS C:\Users\ankit> kubectl delete deploy ngnix-server
+deployment.apps "ngnix-server" deleted
+
+PS C:\Users\ankit>  kubectl create deployment nginx-server --image=nginx
+deployment.apps/ngnix-server created
+
+
+PS C:\Users\ankit> kubectl get deploy
+NAME           READY   UP-TO-DATE   AVAILABLE   AGE
+ngnix-server   0/1     1            0           16s
+
+PS C:\Users\ankit> kubectl get pods
+NAME                            READY   STATUS         RESTARTS   AGE
+ngnix-server-78dcb958f4-nzchp   0/1     ErrImagePull   0          44s
+
+PS C:\Users\ankit> kubectl get replicaset
+NAME                      DESIRED   CURRENT   READY   AGE
+ngnix-server-78dcb958f4   1         1         0       66s
+
+PS C:\Users\ankit> kubectl get pods
+NAME                            READY   STATUS         RESTARTS   AGE
+ngnix-server-78dcb958f4-nzchp   0/1     ErrImagePull   0          70s
+
+PS C:\Users\ankit> kubectl get deploy
+NAME           READY   UP-TO-DATE   AVAILABLE   AGE
+ngnix-server   0/1     1            0           74s
+
+
+PS C:\Users\ankit> kubectl describe deployment nginx-server
+
+PS C:\Users\ankit> kubectl edit deployment
+deployment.apps/nginx-server edited
+
+PS C:\Users\ankit> kubectl get pod
+NAME                            READY   STATUS    RESTARTS   AGE
+nginx-server-64cd7677c6-q9q45   1/1     Running   0          9s
+nginx-server-64cd7677c6-stz9x   1/1     Running   0          2m59s
+
+PS C:\Users\ankit> kubectl logs nginx-server-64cd7677c6-q9q45
+
+
+
+kubectl exec -it nginx-server-64cd7677c6-q9q45 -- bin/bash
+
+kubectl delete deployment nginx-server
+
+
+Placed deploy.yml in D:\Spring_Projects\Kubernetes and ran this
+
+kubectl apply -f .\deploy.yml
+
+PS D:\Spring_Projects\Kubernetes> kubectl get deployment
+NAME           READY   UP-TO-DATE   AVAILABLE   AGE
+myapp-deploy   1/1     1            1           2m44s
+
+PS D:\Spring_Projects\Kubernetes> kubectl get replicaset
+NAME                     DESIRED   CURRENT   READY   AGE
+myapp-deploy-d87d5ff55   1         1         1       2m54s
+
+PS D:\Spring_Projects\Kubernetes> kubectl get pods
+NAME                           READY   STATUS    RESTARTS   AGE
+myapp-deploy-d87d5ff55-97mpr   1/1     Running   0          3m5s
+
+kubectl logs myapp-deploy-d87d5ff55-97mpr
+
+
+To delete everything:- (Present in the yml file)
+
+kubectl delete -f .\deploy.yml
+
+
+Made one more file named svc.yml in the same path and launching both things(ie Deployment and Service) using command
+
+kubectl apply -f .\deploy.yml
+kubectl apply -f .\svc.yml
+
+
+To get deployments:-
+kubectl get deployments
+
+To get services:-
+kubectl get service
+
+To get service details:-
+kubectl describe service myapp-svc
+
+
+kubectl get pods
+
+To get all info about pods:-
+kubectl get pods -o wide
+
+
+To get yaml file;-
+
+kubectl get deployment -o yaml
+
+
+kubectl get service
+
+minikube service myapp-svc
+
+|-----------|-----------|-------------|---------------------------|
+| NAMESPACE |   NAME    | TARGET PORT |            URL            |
+|-----------|-----------|-------------|---------------------------|
+| default   | myapp-svc |        9092 | http://192.168.49.2:30557 |
+|-----------|-----------|-------------|---------------------------|
+🏃  Starting tunnel for service myapp-svc.
+|-----------|-----------|-------------|------------------------|
+| NAMESPACE |   NAME    | TARGET PORT |          URL           |
+|-----------|-----------|-------------|------------------------|
+| default   | myapp-svc |             | http://127.0.0.1:52227 |
+|-----------|-----------|-------------|------------------------|
+🎉  Opening service default/myapp-svc in default browser...
+❗  Because you are using a Docker driver on windows, the terminal needs to be open to run it.
+
+
+PS C:\Users\ankit> kubectl get namespaces
+
+NAME                   STATUS   AGE
+default                Active   27h
+kube-node-lease        Active   27h
+kube-public            Active   27h
+kube-system            Active   27h
+kubernetes-dashboard   Active   26h
+
+To check whether something is present :-
+
+#In a namespace
+kubectl api-resources --namespaced=true
+#Not in a namespace
+kubectl api-resources --namespaced=falseV
+
+kubectl create namespace my-namespace
+
+kubectl apply -f .\deploy.yml --namespace=my-namespace
+
+kubectl get deployments -n my-namespace
+
+kubectl get pods -n my-namespace
+
+kubectl delete -f .\deploy.yml -n my-namespace
+ 
+ 
+-------------------------Kubernetes health checks------------------------
+
+Readiness probe(once during start of an app)     Liveliness Probe(Used to check whether our application is live or not)
+Used to determine whether  the application
+is read or not
+
+Used during start of the application             Used else all of the time
+
+
+These 3 probes can be used for both Readiness and Liveliness probe
+
+1. Command Probe(We give command and the health is checked via the help of commands)
+2. HTTP probe (We define a get request and k8s use this endpoint to ping and check health of our app) (Optimun range:- 200-399), everything else is unhealthy
+3. TCP Probe(Opens tcp port if its able to open the port then the connection is healthy else its not healthy)
+
+Check for paramenters related to these probes...
+
+--------------------------------------------------------------------------------
+
+minikube addons list
+
+Ingress component(service):-
+
+minikube addons enable ingress
+
+
+To get components deployed:-
+
+kubectl get all
+
+To apply all the configurations in a single shot in that respective folder we use:-
+
+kubectl apply -f ./
+
+To get details of your ingress component:-
+
+PS D:\Spring_Projects\Kubernetes\Ingress> kubectl get ingress
+
+NAME         CLASS   HOSTS                                   ADDRESS     PORTS   AGE
+my-ingress   nginx   user.dcbapp.com,department.dcbapp.com   localhost   80      3m34s
+
+To delete all the services at once we can use:-(All the configs present in a single folder)
+
+kubectl delete -f ./
+
+
+PS D:\Spring_Projects\Kubernetes\Ingress> ls
+
+
+    Directory: D:\Spring_Projects\Kubernetes\Ingress
+
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+-a----        29-04-2021  10:19 AM            661 department-service-deploy.yml
+-a----        29-04-2021  10:19 AM            534 ingress-scv.yml
+-a----        29-04-2021  10:19 AM            578 ingress-svc-domain.yml
+-a----        24-05-2022  03:29 AM            138 Note.txt
+-a----        29-04-2021  10:19 AM            613 user-service-deploy.yml
+
+
+PS D:\Spring_Projects\Kubernetes\Ingress> kubectl apply -f .\department-service-deploy.yml
+deployment.apps/department-service-app created
+service/department-service-svc created
+PS D:\Spring_Projects\Kubernetes\Ingress> kubectl apply -f .\user-service-deploy.yml
+deployment.apps/user-service-app created
+service/user-service-svc created
+PS D:\Spring_Projects\Kubernetes\Ingress> kubectl apply -f .\ingress-svc-domain.yml
+ingress.networking.k8s.io/my-ingress created
+PS D:\Spring_Projects\Kubernetes\Ingress>   
+
+
+kubectl get ingress
+
+
+-------Kubernetes StatefulSet----------(Give a read)
+
+
+-------Kubernetes Services---------
+
+Internal Services:-
+
+1. Cluster IP --> Internal Service only in a k8s cluster
+2. Headless ---> Internal service for statefulset (DB application) in a k8s cluster
+
+External Services:-
+
+3. Nodeport ----> Opens a port in all the nodes in a k8s cluster to acess from outside the world(Not safe and not recommended)
+4. Loadbalancer ----> Opens a single port for the whole K8s cluseter to access from outside world(Generally used in industry)
+
+-------Kubernetes Volume-------------
+
+
+Steps:-
+
+Manual:-
+
+1. Make volume by admin (manual)
+2. Persistent Volume Claim(to use the volume)
+
+Note:- Persistent Volume Claim is the claim which is used to make to a presistence volume before using it [statically]...
+
+Secret and Config map can be mounted without any claim.
+
+Dynamic approach for Persistent Volume Claim
+
+Storage Class is a way to provision Persistent Volume dynamically, when PersistentVolumeClaim claims it. then we can claim that volume as and per required.
+
+Automatic process:-
+
+1. Storage class to get it done automatically(in either gcp or aws)
+2. Persistent Volume Claim(to use the volume)
+
+
+
+After deploying Spring Boot microservices we used kube-forwarder
